@@ -147,6 +147,7 @@ class Compiler:
     得到名字表
     """
     def get_name_table(self):
+        mian_flag = False
         temp_sym_list = self.sym_list
         status = 0
         # 使用有限自动状态机构造名字表
@@ -156,6 +157,7 @@ class Compiler:
                 continue
             if status == 1:
                 if element == self.Sym.identsym:
+                    main_flag = True
                     status = 2
                     continue
                 else:
@@ -179,11 +181,14 @@ class Compiler:
                     continue
             if status == 4:
                 # 添加到名字表
-                # name_table = self.Name_table
-                # name_table.ty = element
-                # name_table.
-
-                pass
+                name_table = self.Name_table
+                name_table.ty = element
+                name_table.name = self.key_list[element]
+                if main_flag:
+                    name_table.level = 0
+                else:
+                    name_table.level = 1
+                # size 暂时不定义,使用的时候取一个较大的值
 
     # 名字表类的定义
     class Name_table:
