@@ -60,6 +60,10 @@ class Compiler:
     """
     sym_list = []
 
+    """
+    单词的集合
+    """
+    key_list = []
     def lexical_analysis(self, filename):
         # 读入文件内容
         self.source_file_name = sys.path[0] + '/' + filename
@@ -72,9 +76,10 @@ class Compiler:
 
 
     def get_sym_list(self):
-        sym = self.get_char()
+        sym,key = self.get_char()
         while sym is not None:
             self.sym_list.append(sym)
+            self.key_list.append(key)
             sym = self.get_char()
         return self.sym_list
     """
@@ -104,8 +109,10 @@ class Compiler:
                 sym = self.all_source_code[0: int(i-1)]
                 all_source_code_length = len(self.all_source_code)
                 self.all_source_code = self.all_source_code[i-1: all_source_code_length]
-                return self.get_sym(sym)
-
+                return self.get_sym(sym),str(sym).replace('\n','')
+    """
+    得到单词的类型的枚举值
+    """
     def get_sym(self, s):
         i = 0
         for express in self.key:
@@ -128,8 +135,60 @@ class Compiler:
             self.all_source_code = self.all_source_code + source_code_temp
         self.all_source_code = str(self.all_source_code).replace('\t', '').replace('\n', ' ') + " "
         return self.all_source_code
+    """
+    格式化代码串，将代码中的前导‘ ’ ‘\n ’去掉
+    """
     def format_all_source_code(self):
         if len(self.all_source_code) > 0:
             if self.all_source_code[0] == ' ' or self.all_source_code[0] == '\n':
                 self.all_source_code = self.all_source_code[1: len(self.all_source_code)]
                 self.format_all_source_code()
+    """
+    得到名字表
+    """
+    def get_name_table(self):
+        temp_sym_list = self.sym_list
+        status = 0
+        # 使用有限自动状态机构造名字表
+        for element in temp_sym_list:
+            if status == 0 and (element == self.Sym.intsym or element == self.Sym.voidsym):
+                status = 1
+                continue
+            if status == 1:
+                if element == self.Sym.identsym:
+                    status = 2
+                    continue
+                else:
+                    status = 0
+                    continue
+            if status == 2:
+                if element == self.Sym.youdakuohaosym:
+                    status = 3
+                    continue
+                else:
+                    status = 0
+                    continue
+            if status == 3:
+                if element == self.Sym.intsym:
+                    # name_table = self.Name_table
+                    # name_table.ty = self.Sym.intsym
+                    status = 4
+                    continue
+                else:
+                    status = 0
+                    continue
+            if status == 4:
+                # 添加到名字表
+                # name_table = self.Name_table
+                # name_table.
+
+                pass
+
+    # 名字表类的定义
+    class Name_table:
+        ty = None
+        name = ''
+        level = 0
+        size = 0
+
+
