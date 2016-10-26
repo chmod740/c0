@@ -180,6 +180,7 @@ class Compiler:
             if status == 4:
                 # 添加到名字表
                 # name_table = self.Name_table
+                # name_table.ty = element
                 # name_table.
 
                 pass
